@@ -11,27 +11,35 @@ app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3001
 
 app.listen(PORT, function() {
   console.log(`server start at ${PORT}`);
 })
 
 app.get('/watch', function(req, res) {
-  vastClient.get('http://localhost:8000/video/vast_example.xml')
-  .then(res => {
+  vastClient.get('http://localhost:8000/vast/sample_creative.xml')
+  .then(vastData => {
     // Do something with the parsed VAST response
-    console.log(res)
+    console.log(vastData)
+
+    var ad = vastData.ads[0]
+    var creative = ad.creatives[0];
+    var mediaFiles = creative.mediaFiles;
+    var mediaFile = mediaFiles[0]
+
 
     var params = {
     };
   
-    params.title = 'test';
-    params.width = '300';
-    params.height = '200';
-    params.src = 'src';
-    params.type = 'video/mp4';
-  
+    params.title = ad.title;
+    params.width = mediaFile.width;
+    params.height = mediaFile.height;
+    params.src = mediaFile.fileURL;
+    params.type = mediaFile.mimeType;
+    
+    console.log('params:', params)
+
     res.render('watch', params);
   })
   .catch(err => {

@@ -4,7 +4,7 @@ const url = require('url');
 
 const app = express()
 
-//app.use(express.static('public'));
+app.use(express.static('public'));
 
 const PORT = process.env.PORT || 8000
 
@@ -16,30 +16,7 @@ app.listen(PORT, function() {
   console.log(`server start at ${PORT}`);
 })
 
-app.get('/video/*', function(req, res) {
-  var parseUrl = url.parse(req.url)
-  var resource = parseUrl.pathname
-  console.log('resource=' + resource)
-
-  var resourcePath = '.' + resource
-  console.log('resourcePath=' + resourcePath)
-
-  fs.readFile(resourcePath, 'utf-8', function(err, data) {
-    if(err) {
-      res.writeHead(500, {
-        'Content-Type':'text/html'
-      })
-      res.end('Internal Server '+ err)
-    } else {
-      res.writeHead(200, {
-        'Content-Type':'text/html'
-      })
-      res.end(data)
-    }
-  })
-})
-
-app.get('/ad/*.mp4', function(req, res) {
+app.get('/ads/*.mp4', function(req, res) {
   var parseUrl = url.parse(req.url)
   var resource = parseUrl.pathname
   console.log('resource=' + resource)
@@ -49,6 +26,7 @@ app.get('/ad/*.mp4', function(req, res) {
 
   var stream = fs.createReadStream(resourcePath)
 
+  // chunk count
   var count = 0
 
   stream.on('data', function(data) {
@@ -70,6 +48,29 @@ app.get('/ad/*.mp4', function(req, res) {
     console.log(err);
 
     res.end('500 Internal Server '+ err)
+  })
+})
+
+app.get('/vast/*', function(req, res) {
+  var parseUrl = url.parse(req.url)
+  var resource = parseUrl.pathname
+  console.log('resource=' + resource)
+
+  var resourcePath = '.' + resource
+  console.log('resourcePath=' + resourcePath)
+
+  fs.readFile(resourcePath, 'utf-8', function(err, data) {
+    if(err) {
+      res.writeHead(500, {
+        'Content-Type':'text/html'
+      })
+      res.end('Internal Server '+ err)
+    } else {
+      res.writeHead(200, {
+        'Content-Type':'text/html'
+      })
+      res.end(data)
+    }
   })
 })
 
